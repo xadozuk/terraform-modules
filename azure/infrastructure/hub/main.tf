@@ -12,7 +12,7 @@
 # - Network Watcher
 # - DNS
 module "vnet" {
-    source = "../../resources/vnet"
+  source = "../../resources/vnet"
 
 
 }
