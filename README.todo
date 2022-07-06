@@ -1,0 +1,30 @@
+Modules:
+    Active Directory node:
+        - VM "cluster" (x nodes)
+        - AD DSC Script
+
+    Hub:
+        - VNet
+        - ExpressRoute GW
+        - VPN Gateway
+        - LogAnalytics
+        - Peering
+        - Network Watcher
+        - DNS
+
+    Spoke:
+        - VNET
+        - Peering
+        - DNS
+
+    LogAnalytics:
+
+    AzureBackup:
+
+    DNS:
+Building blocks:
+    VNET:
+        - Vnet/Subnet
+        - NSG (default only internal communication)
+        - Peering
+        - DNS
