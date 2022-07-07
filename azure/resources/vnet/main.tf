@@ -6,6 +6,16 @@ locals {
 
   rg_tags  = var.include_tags_from_resource_group ? var.resource_group.tags : tomap({})
   tags     = merge(local.rg_tags, var.tags)
+
+  network_security_groups_to_create = {
+    for name, _ in local.subnets :
+      name => name if try(var.network_security_group_ids[name], true) == true
+  }
+
+  network_security_groups_to_attach = {
+    for name, _ in local.subnets :
+      name => name if try(var.network_security_group_ids[name], true) != null
+  }
 }
 
 resource "azurerm_virtual_network" "vnet" {
@@ -30,19 +40,18 @@ resource "azurerm_subnet" "subnet" {
   resource_group_name  = local.rg_name
   virtual_network_name = azurerm_virtual_network.vnet.name
 
-  name = format(
-      "snet-%s-%s-%s",
-      each.key,
-      var.subscription_type,
-      local.location
-  )
+  name = var.follow_subnet_naming_convention ? format(
+                                                "snet-%s-%s-%s",
+                                                each.key,
+                                                var.subscription_type,
+                                                local.location
+                                              ) : each.key
 
   address_prefixes = [each.value]
 }
 
-# TODO: Permit user to specify his own NSG to bind to specific subnets
 resource "azurerm_network_security_group" "nsg" {
-  for_each = local.subnets
+  for_each = local.network_security_groups_to_create
 
   resource_group_name = local.rg_name
   location            = local.location
@@ -52,8 +61,8 @@ resource "azurerm_network_security_group" "nsg" {
 }
 
 resource "azurerm_subnet_network_security_group_association" "subnet_nsg" {
-  for_each = local.subnets
+  for_each = local.network_security_groups_to_attach
 
-  network_security_group_id = azurerm_network_security_group.nsg[each.key].id
+  network_security_group_id = try(var.network_security_group_ids[each.key], azurerm_network_security_group.nsg[each.key].id)
   subnet_id                 = azurerm_subnet.subnet[each.key].id
 }

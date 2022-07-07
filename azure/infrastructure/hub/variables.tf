@@ -17,6 +17,7 @@ variable "resource_group" {
   type = object({
       name     = string
       location = string
+      tags     = map(string)
   })
 }
 
@@ -32,4 +33,35 @@ variable "tags" {
   type = map(string)
 
   default = {}
+}
+
+variable "firewall" {
+  description = "Firewall configuration. Setting this to null disable Azure Firewall in the hub."
+
+  type = object({
+    subnet_prefix = string
+    sku_tier      = string
+  })
+}
+
+variable "bastion" {
+  description = "Azure Bastion configuration. Setting this to null disable Azure Bastion in the hub."
+
+  type = object({
+    subnet_prefix = string
+    sku           = string
+  })
+}
+
+variable "vnet_gateway" {
+  description = "Azure Virtual Network (VPN) Gateway configuration. Setting this to null disable Azure VPN Gateway in the hub."
+  type = object({
+    subnet_prefix = string
+    vpn = object({
+      sku = string
+    })
+    express_route = object({
+      sku = string
+    })
+  })
 }

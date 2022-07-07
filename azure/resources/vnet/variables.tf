@@ -33,6 +33,13 @@ variable "address_spaces" {
   type = list(string)
 }
 
+variable "follow_subnet_naming_convention" {
+  description = "Automatically name subnet according to Azure default naming convention"
+
+  type    = bool
+  default = true
+}
+
 variable "subnet_names" {
   description = "List of subnet names"
 
@@ -57,4 +64,12 @@ variable "include_tags_from_resource_group" {
   description = "Include tags from resource group"
   type        = bool
   default     = false
+}
+
+variable "network_security_group_ids" {
+  description = "Existing network security groups to attach to subnet (if set to null for a specific subnet, will disable NSG creation)."
+
+  type = map(string)
+
+  default = {}
 }

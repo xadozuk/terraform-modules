@@ -10,5 +10,5 @@ output "name" {
 
 output "subnet_ids" {
   description = "Subnet IDs created inside the virtual network"
-  value       = [for _, subnet in azurerm_subnet.subnet: subnet.id]
+  value       = {for name, subnet in azurerm_subnet.subnet: name => subnet.id }
 }
